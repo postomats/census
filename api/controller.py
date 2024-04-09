@@ -15,7 +15,7 @@ async def sign_up(
     group: str = "XXXXX",
     email: EmailStr = "email@email.email",
     password: str = "password",
-) -> schemas.SignUpReturn | dict:
+) -> schemas.SignInReturn | dict:
     """
     Регистрирует нового пользователя.
 
@@ -29,10 +29,13 @@ async def sign_up(
     - password (str): Пароль пользователя.
 
     Returns:
-    - SignUpReturn | dict: Возвращает данные о результате регистрации или словарь с ошибкой.
+    - SignInReturn | dict: Возвращает данные о результате регистрации или словарь с ошибкой.
     """
-    if await service.create_user(username, first_name, last_name, group, email, password):
+    sign_up = await service.create_user(username, first_name, last_name, group, email, password)
+    if sign_up.get("status"):
         return await service.sign_in(email, password)
+    else:
+        return sign_up
 
 
 @controller.post("/user/auth/sign-in")
