@@ -1,8 +1,12 @@
 from ormar import String, Integer, Model, DateTime
 from db import BaseMeta
 import datetime, bcrypt
-from api.SETTINGS import USERS_TABLENAME
+from enum import Enum
 
+class UserRole(Enum):
+    STUDENT = "Student"
+    WORKER = "Worker"
+    ADMIN = "Admin"
 
 class User(Model):
     """
@@ -17,9 +21,10 @@ class User(Model):
     username = String(max_length=100, unique=True)
     first_name = String(max_length=100)
     last_name = String(max_length=100)
-    group = String(max_length=10)
     email = String(max_length=100, unique=True)
+    group = String(max_length=100)
     password = String(max_length=255)
+    role = String(max_length=20)
 
     async def set_password(self, password: str) -> None:
         """
@@ -45,7 +50,7 @@ class User(Model):
         Метакласс для определения настроек таблицы базы данных для модели User.
         """
 
-        tablename = USERS_TABLENAME
+        tablename = "users_db"
 
     async def json(self):
         """
@@ -60,4 +65,5 @@ class User(Model):
             "last_name": self.last_name,
             "group": self.group,
             "email": self.email,
+            "role": self.role
         }

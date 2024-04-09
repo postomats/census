@@ -9,12 +9,7 @@ from api.SETTINGS import jwt_key
 
 
 async def create_user(
-    username: str,
-    first_name: str,
-    last_name: str,
-    group: str,
-    email: str,
-    password: str,
+    username: str, first_name: str, last_name: str, group: str, email: str, password: str, role: str
 ):
     """
     Создает нового пользователя в базе данных и соответствующую папку для хранения данных.
@@ -40,6 +35,7 @@ async def create_user(
         group=group,
         email=email,
         password=jwt_key,
+        role=role,
     )
     await user.set_password(password=password)
     user.created_date = datetime.now()

@@ -2,7 +2,8 @@ from fastapi import APIRouter, Request
 from pydantic import EmailStr
 
 from api import schemas, utils, service
-from api.models import User
+from api.models import User, UserRole
+
 controller = APIRouter()
 
 
@@ -31,7 +32,9 @@ async def sign_up(
     Returns:
     - SignInReturn | dict: Возвращает данные о результате регистрации или словарь с ошибкой.
     """
-    sign_up = await service.create_user(username, first_name, last_name, group, email, password)
+    sign_up = await service.create_user(
+        username, first_name, last_name, group, email, password, role=UserRole.STUDENT
+    )
     if sign_up.get("status"):
         return await service.sign_in(email, password)
     else:
