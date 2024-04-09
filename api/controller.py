@@ -3,7 +3,6 @@ from pydantic import EmailStr
 
 from api import schemas, utils, service
 from api.models import User
-
 controller = APIRouter()
 
 
@@ -13,6 +12,7 @@ async def sign_up(
     username: str = "username",
     first_name: str = "first_name",
     last_name: str = "last_name",
+    group: str = "XXXXX",
     email: EmailStr = "email@email.email",
     password: str = "password",
 ) -> schemas.SignUpReturn | dict:
@@ -24,13 +24,15 @@ async def sign_up(
     - username (str): Имя пользователя.
     - first_name (str): Имя пользователя.
     - last_name (str): Фамилия пользователя.
+    - group (str): Учебная группа.
     - email (EmailStr): Электронная почта пользователя.
     - password (str): Пароль пользователя.
 
     Returns:
     - SignUpReturn | dict: Возвращает данные о результате регистрации или словарь с ошибкой.
     """
-    return await service.create_user(username, first_name, last_name, email, password)
+    if await service.create_user(username, first_name, last_name, group, email, password):
+        return await service.sign_in(email, password)
 
 
 @controller.post("/user/auth/sign-in")

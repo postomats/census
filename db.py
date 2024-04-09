@@ -1,12 +1,12 @@
 import sqlalchemy
 import databases
 import ormar
-from api.SETTINGS import DATABASE_URL
+from api.SETTINGS import SQLALCHEMY_DATABASE_URL
 
 # Определение URL базы данных (в данном случае, PostgreSQL)
 
 # Инициализация объекта базы данных с использованием databases
-database = databases.Database(DATABASE_URL)
+database = databases.Database(SQLALCHEMY_DATABASE_URL)
 
 # Инициализация объекта метаданных для работы с SQLAlchemy
 metadata = sqlalchemy.MetaData()

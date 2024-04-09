@@ -55,4 +55,5 @@ class MeReturn(pydantic.BaseModel):
     username: str
     first_name: str
     last_name: str
+    group: str
     email: pydantic.EmailStr
