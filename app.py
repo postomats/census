@@ -2,14 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.controller import controller
 from os import environ
-
-# Получение URL для OPENAPI_URL
-OPENAPI_URL = environ.get('OPENAPI_URL', '')
-
 # Создание экземпляра FastAPI
-app = FastAPI(openapi_url=OPENAPI_URL)
+app = FastAPI()
+openapi_url = environ.get('OPENAPI_URL', '')
 # Подключение роутера из модуля api.controller с префиксом и тегом
-app.include_router(controller, tags=["Переписчик)"])
+app.include_router(controller, tags=["Переписчик)"], openapi_url=openapi_url)
 
 # Добавление middleware для обработки CORS
 app.add_middleware(
