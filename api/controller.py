@@ -31,7 +31,6 @@ def sign_up(
     """
     sign_up = service.create_user(
         db,
-        data.username,
         data.first_name,
         data.last_name,
         data.group,
