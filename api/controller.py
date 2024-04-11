@@ -5,6 +5,8 @@ from api.models import User
 from db import get_db
 from sqlalchemy.orm import Session
 
+from api.schemas import SindUpScheme
+
 controller = APIRouter()
 
 
@@ -45,9 +47,7 @@ def sign_up(
 
 @controller.post("/user/auth/sign-in")
 def sign_in(
-    request: Request,
-    email: EmailStr = "email@email.email",
-    password: str = "password",
+    data: SindUpScheme,
     db: Session = Depends(get_db),
 ) -> schemas.SignInReturn | dict:
     """
@@ -61,7 +61,7 @@ def sign_in(
     Returns:
     - SignInReturn | dict: Возвращает данные о результате авторизации или словарь с ошибкой.
     """
-    return service.sign_in(db, email, password)
+    return service.sign_in(db, data.email, data.password)
 
 
 @controller.post("/user/reset_password")
