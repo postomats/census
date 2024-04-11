@@ -1,4 +1,4 @@
-from os import env
+from os import environ as env
 
 DEFAULT_KEY = 'test'
 
