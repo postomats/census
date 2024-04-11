@@ -30,7 +30,14 @@ def sign_up(
     - SignInReturn | dict: Возвращает данные о результате регистрации или словарь с ошибкой.
     """
     sign_up = service.create_user(
-        db, data.username, data.first_name, data.last_name, data.group, data.email, data.password, role="Student"
+        db,
+        data.username,
+        data.first_name,
+        data.last_name,
+        data.group,
+        data.email,
+        data.password,
+        role="Student",
     )
     if sign_up.get("status"):
         return service.sign_in(db, data.email, data.password)
@@ -60,7 +67,7 @@ def sign_in(
 @controller.post("/user/reset_password")
 def reset_password(
     request: Request, token: str, old: str, new: str, db: Session = Depends(get_db)
-) ->  dict | schemas.ResetPasswordReturn:
+) -> dict | schemas.ResetPasswordReturn:
     """
     Сбрасывает пароль пользователя.
 
@@ -93,3 +100,20 @@ async def me(
     """
     user: User = utils.get_user_from_token(db, token)
     return user.json()
+
+
+@controller.put("/change_role")
+def change_role_by_email(
+    jwt: str, email: EmailStr, role: str, db: Session = Depends(get_db)
+):
+    user: User = utils.get_user_from_token(db, jwt)
+    if user.role == "Admin":
+        updated_user: User = db.query(User).filter(User.email == email).first()
+        if updated_user:
+            updated_user.role = role
+            db.commit()
+        else:
+            return {"status": False, "error": 404, "message": "User not found"}
+    else:
+        return {"status": False, "error": 403, "message": "Permission denied"}
+    return {"status": True}
