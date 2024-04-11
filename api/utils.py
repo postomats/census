@@ -2,6 +2,9 @@ from api.models import User
 import jwt
 from api.SETTINGS import JWT_KEY
 from sqlalchemy.orm import Session
+
+from fastapi import HTTPException
+
 def check_username_unique(db: Session, username: str) -> bool:
     """
     Проверяет уникальность имени пользователя.
@@ -27,6 +30,9 @@ def get_user_from_token(db: Session, token: str):
     :param token: Токен для декодирования.
     :return: Объект пользователя, соответствующий идентификатору из токена.
     """
-    payload = jwt.decode(token, JWT_KEY, algorithms=['HS256'])
-    user_id = payload.get('user_id')
-    return db.query(User).filter(User.id == user_id).first()
+    try:
+        payload = jwt.decode(token, JWT_KEY, algorithms=['HS256'])
+        user_id = payload.get('user_id')
+        return db.query(User).filter(User.id == user_id).first()
+    except jwt.exceptions.DecodeError:
+        raise HTTPException(401, 'Incorrected data')
