@@ -1,14 +1,16 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from pydantic import EmailStr
 
 from api import schemas, utils, service
 from api.models import User
+from db import get_db
+from sqlalchemy.orm import Session
 
 controller = APIRouter()
 
 
 @controller.post("/user/auth/sign-up")
-async def sign_up(
+def sign_up(
     request: Request,
     username: str = "username",
     first_name: str = "first_name",
@@ -16,6 +18,7 @@ async def sign_up(
     group: str = "XXXXX",
     email: EmailStr = "email@email.email",
     password: str = "password",
+    db: Session = Depends(get_db),
 ) -> schemas.SignInReturn | dict:
     """
     Регистрирует нового пользователя.
@@ -32,18 +35,21 @@ async def sign_up(
     Returns:
     - SignInReturn | dict: Возвращает данные о результате регистрации или словарь с ошибкой.
     """
-    sign_up = await service.create_user(
-        username, first_name, last_name, group, email, password, role="Student"
+    sign_up = service.create_user(
+        db, username, first_name, last_name, group, email, password, role="Student"
     )
     if sign_up.get("status"):
-        return await service.sign_in(email, password)
+        return service.sign_in(db, email, password)
     else:
         return sign_up
 
 
 @controller.post("/user/auth/sign-in")
-async def sign_in(
-    request: Request, email: EmailStr = "email@email.email", password: str = "password"
+def sign_in(
+    request: Request,
+    email: EmailStr = "email@email.email",
+    password: str = "password",
+    db: Session = Depends(get_db),
 ) -> schemas.SignInReturn | dict:
     """
     Авторизует пользователя.
@@ -56,13 +62,13 @@ async def sign_in(
     Returns:
     - SignInReturn | dict: Возвращает данные о результате авторизации или словарь с ошибкой.
     """
-    return await service.sign_in(email, password)
+    return service.sign_in(db, email, password)
 
 
 @controller.post("/user/reset_password")
-async def reset_password(
-    request: Request, token: str, old: str, new: str
-) -> schemas.ResetPasswordReturn | dict:
+def reset_password(
+    request: Request, token: str, old: str, new: str, db: Session = Depends(get_db)
+) ->  dict | schemas.ResetPasswordReturn:
     """
     Сбрасывает пароль пользователя.
 
@@ -75,12 +81,14 @@ async def reset_password(
     Returns:
     - ResetPasswordReturn | dict: Возвращает данные о результате сброса пароля или словарь с ошибкой.
     """
-    user: User = await utils.get_user_from_token(token, User)
-    return await service.reset_password(user, old, new)
+    user: User = utils.get_user_from_token(db, token)
+    return service.reset_password(db, user, old, new)
 
 
 @controller.get("/me")
-async def me(request: Request, token: str) -> schemas.MeReturn | dict:
+async def me(
+    request: Request, token: str, db: Session = Depends(get_db)
+) -> schemas.MeReturn | dict:
     """
     Получает информацию о текущем пользователе.
 
@@ -91,5 +99,5 @@ async def me(request: Request, token: str) -> schemas.MeReturn | dict:
     Returns:
     - MeReturn | dict: Возвращает данные о текущем пользователе или словарь с ошибкой.
     """
-    user: User = await utils.get_user_from_token(token, User)
-    return await user.json()
+    user: User = utils.get_user_from_token(db, token)
+    return user.json()

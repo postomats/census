@@ -1,4 +1,3 @@
-from api import models
 from datetime import datetime
 from api import utils
 from api.models import User
@@ -6,10 +5,17 @@ import jwt
 from api import exceptions
 from api import schemas
 from api.SETTINGS import JWT_KEY
+from sqlalchemy.orm import Session
 
-
-async def create_user(
-    username: str, first_name: str, last_name: str, group: str, email: str, password: str, role: str
+def create_user(
+    db: Session,
+    username: str,
+    first_name: str,
+    last_name: str,
+    group: str,
+    email: str,
+    password: str,
+    role: str,
 ):
     """
     Создает нового пользователя в базе данных и соответствующую папку для хранения данных.
@@ -24,11 +30,13 @@ async def create_user(
     Returns:
     - dict: Возвращает статус регистрации и идентификатор пользователя, если успешно, или словарь с ошибкой.
     """
-    if not await utils.check_email_unique(email):
+    if not utils.check_email_unique(db, email):
+        print(utils.check_email_unique(db, email))
         return exceptions.sign_up_email_unique
-    if not await utils.check_username_unique(username):
+    if not utils.check_username_unique(db, username):
+        print(utils.check_username_unique(db, username))
         return exceptions.sign_up_username_unique
-    user = models.User(
+    user = User(
         username=username,
         first_name=first_name,
         last_name=last_name,
@@ -37,17 +45,17 @@ async def create_user(
         password=JWT_KEY,
         role=role,
     )
-    await user.set_password(password=password)
-    user.created_date = datetime.now()
+    user.set_password(password=password)
 
     try:
-        await user.save()
+        db.add(user)
+        db.commit()
     except:
         return exceptions.sign_up_error
     return {"status": True, "user_id": user.id}
 
 
-async def sign_in(email: str, password: str):
+def sign_in(db, email: str, password: str):
     """
     Авторизует пользователя.
 
@@ -58,15 +66,15 @@ async def sign_in(email: str, password: str):
     Returns:
     - dict: Возвращает токен аутентификации, если успешно, или словарь с ошибкой.
     """
-    if not await User.objects.filter(email=email).exists():
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
         return exceptions.sign_in_user_not_found_by_email
-    user = await User.objects.get(email=email)
-    if await user.check_password(password):
+    if user.check_password(password):
         return {"token": jwt.encode({"user_id": user.id}, JWT_KEY, algorithm="HS256")}
     return exceptions.sign_in_wrong_password
 
 
-async def reset_password(user, old: str, new: str) -> schemas.ResetPasswordReturn:
+def reset_password(db, user, old: str, new: str) -> schemas.ResetPasswordReturn:
     """
     Сбрасывает пароль пользователя.
 
@@ -78,8 +86,10 @@ async def reset_password(user, old: str, new: str) -> schemas.ResetPasswordRetur
     Returns:
     - dict: Возвращает статус сброса пароля или словарь с ошибкой.
     """
-    if await user.check_password(old):
-        await user.set_password(new)
-        await user.update()
+    if old == new:
+        return exceptions.passwords_match
+    if user.check_password(old):
+        user.set_password(new)
+        db.commit()
         return {"status": True}
     return exceptions.sign_in_wrong_password

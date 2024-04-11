@@ -1,23 +1,17 @@
-import sqlalchemy
-import databases
-import ormar
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 from api.SETTINGS import SQLALCHEMY_DATABASE_URL
-
+from sqlalchemy.orm import sessionmaker
 # Определение URL базы данных (в данном случае, PostgreSQL)
-
-# Инициализация объекта базы данных с использованием databases
-database = databases.Database(SQLALCHEMY_DATABASE_URL)
-
-# Инициализация объекта метаданных для работы с SQLAlchemy
-metadata = sqlalchemy.MetaData()
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
 
 
-# Определение метакласса BaseMeta для использования в ормар-моделях
-class BaseMeta(ormar.ModelMeta):
-    # Указание объекта метаданных и базы данных для моделей
-    metadata = metadata
-    database = database
-
-
-# Импорт моделей из модуля api.models
-from api import models
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

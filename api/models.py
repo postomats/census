@@ -1,9 +1,7 @@
 import bcrypt
 from sqlalchemy import Column, String, Integer, DateTime, Enum
-from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
-
-Base = declarative_base()
+from db import Base, engine
 
 class User(Base):
     """
@@ -55,5 +53,7 @@ class User(Base):
             "last_name": self.last_name,
             "group": self.group,
             "email": self.email,
-            "role": self.role.value
+            "role": self.role
         }
+
+Base.metadata.create_all(bind=engine)

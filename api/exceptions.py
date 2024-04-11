@@ -39,3 +39,12 @@ user_is_not_admin: dict = {
     'error': 'user is not admin',
     'error_ru': "Пользователь не является администратором."
 }
+
+
+passwords_match: dict = {
+    'status': False,
+    'error': 'passwords_match',
+    'error_ru': "Новый пароль совпадает со старым."
+}
+
+
