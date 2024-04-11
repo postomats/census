@@ -20,7 +20,7 @@ class User(Base):
     email = Column(String(100), unique=True)
     group = Column(String(100))
     password = Column(String(255))
-    role = Column(Enum("Student", "Worker", "Admin", name="pgenum"))
+    role = Column(Enum("Student", "Worker", "Admin", name="role_enum"))
 
     def set_password(self, password: str) -> None:
         """
