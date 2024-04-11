@@ -21,7 +21,6 @@ class SindUpScheme(pydantic.BaseModel):
 
 
 class SingInScheme(pydantic.BaseModel):
-    username: str
     first_name: str
     last_name: str
     email: EmailStr
