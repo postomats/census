@@ -30,12 +30,12 @@ def sign_up(
     - SignInReturn | dict: Возвращает данные о результате регистрации или словарь с ошибкой.
     """
     sign_up = service.create_user(
-        db,
-        data.first_name,
-        data.last_name,
-        data.group,
-        data.email,
-        data.password,
+        db=db,
+        first_name=data.first_name,
+        last_name=data.last_name,
+        group=data.group,
+        email=data.email,
+        password=data.password,
         role="Student",
     )
     if sign_up.get("status"):
@@ -60,7 +60,7 @@ def sign_in(
     Returns:
     - SignInReturn | dict: Возвращает данные о результате авторизации или словарь с ошибкой.
     """
-    return service.sign_in(db, data.email, data.password)
+    return service.sign_in(db=db, email=data.email, password=data.password)
 
 
 @controller.post("/user/reset_password")
@@ -80,7 +80,7 @@ def reset_password(
     - ResetPasswordReturn | dict: Возвращает данные о результате сброса пароля или словарь с ошибкой.
     """
     user: User = utils.get_user_from_token(db, token)
-    return service.reset_password(db, user, old, new)
+    return service.reset_password(db=db, user=user, old=old, new=new)
 
 
 @controller.get("/me")

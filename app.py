@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.controller import controller
+
 # Создание экземпляра FastAPI
 app = FastAPI()
 

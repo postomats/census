@@ -23,8 +23,8 @@ class SingInScheme(pydantic.BaseModel):
 class SingUpScheme(pydantic.BaseModel):
     first_name: str
     last_name: str
-    email: EmailStr
     group: str
+    email: EmailStr
     password: str
 
 

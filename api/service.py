@@ -1,10 +1,11 @@
 from api import utils
 from api.models import User
 import jwt
-from api import exceptions
+from fastapi import HTTPException
 from api import schemas
 from api.SETTINGS import JWT_KEY
 from sqlalchemy.orm import Session
+
 
 def create_user(
     db: Session,
@@ -29,8 +30,7 @@ def create_user(
     - dict: Возвращает статус регистрации и идентификатор пользователя, если успешно, или словарь с ошибкой.
     """
     if not utils.check_email_unique(db, email):
-        print(utils.check_email_unique(db, email))
-        return exceptions.sign_up_email_unique
+        raise HTTPException(status_code=400, detail="Почта не уникальна.")
     user = User(
         first_name=first_name,
         last_name=last_name,
@@ -45,7 +45,7 @@ def create_user(
         db.add(user)
         db.commit()
     except:
-        return exceptions.sign_up_error
+        raise HTTPException(status_code=400, detail="Данные не уникальны.")
     return {"status": True, "user_id": user.id}
 
 
@@ -62,10 +62,10 @@ def sign_in(db, email: str, password: str):
     """
     user = db.query(User).filter(User.email == email).first()
     if not user:
-        return exceptions.sign_in_user_not_found_by_email
+        raise HTTPException(status_code=404, detail="Пользователь не найден по почте.")
     if user.check_password(password):
         return {"token": jwt.encode({"user_id": user.id}, JWT_KEY, algorithm="HS256")}
-    return exceptions.sign_in_wrong_password
+    raise HTTPException(status_code=401, detail="Пароль не верный.")
 
 
 def reset_password(db, user, old: str, new: str) -> schemas.ResetPasswordReturn:
@@ -81,9 +81,10 @@ def reset_password(db, user, old: str, new: str) -> schemas.ResetPasswordReturn:
     - dict: Возвращает статус сброса пароля или словарь с ошибкой.
     """
     if old == new:
-        return exceptions.passwords_match
+        raise HTTPException(status_code=400, detail="Новый пароль совпадает со старым.")
     if user.check_password(old):
         user.set_password(new)
         db.commit()
         return {"status": True}
-    return exceptions.sign_in_wrong_password
+    raise HTTPException(status_code=401, detail="Пароль не верный.")
+

@@ -3,17 +3,18 @@ from sqlalchemy import Column, String, Integer, DateTime, Enum
 from datetime import datetime
 from db import Base, engine
 
+
 class User(Base):
     """
     Класс, представляющий пользователя.
 
     Содержит информацию о пользователе и методы для работы с учетной записью.
     """
-    __tablename__ = 'users_db'
+
+    __tablename__ = "users_db"
 
     id = Column(Integer, primary_key=True)
     created_date = Column(DateTime, default=datetime.now)
-
     first_name = Column(String(100))
     last_name = Column(String(100))
     email = Column(String(100), unique=True)
@@ -51,7 +52,8 @@ class User(Base):
             "last_name": self.last_name,
             "group": self.group,
             "email": self.email,
-            "role": self.role
+            "role": self.role,
         }
+
 
 Base.metadata.create_all(bind=engine)

@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from fastapi import HTTPException
 
+
 def check_username_unique(db: Session, username: str) -> bool:
     """
     Проверяет уникальность имени пользователя.
@@ -13,6 +14,7 @@ def check_username_unique(db: Session, username: str) -> bool:
     :return: True, если имя уникально, в противном случае - False.
     """
     return not db.query(User).filter(User.username == username).first()
+
 
 def check_email_unique(db: Session, email: str) -> bool:
     """
@@ -23,6 +25,7 @@ def check_email_unique(db: Session, email: str) -> bool:
     """
     return not db.query(User).filter(User.email == email).first()
 
+
 def get_user_from_token(db: Session, token: str):
     """
     Получает пользователя по токену.
@@ -31,8 +34,8 @@ def get_user_from_token(db: Session, token: str):
     :return: Объект пользователя, соответствующий идентификатору из токена.
     """
     try:
-        payload = jwt.decode(token, JWT_KEY, algorithms=['HS256'])
-        user_id = payload.get('user_id')
+        payload = jwt.decode(token, JWT_KEY, algorithms=["HS256"])
+        user_id = payload.get("user_id")
         return db.query(User).filter(User.id == user_id).first()
     except jwt.exceptions.DecodeError:
-        raise HTTPException(401, 'Incorrected data')
+        raise HTTPException(401, "Incorrected data")
