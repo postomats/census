@@ -1,5 +1,5 @@
 import jwt
-from api.SETTINGS import jwt_key
+from api.SETTINGS import JWT_KEY
 
 
 async def check_username_unique(username: str, user: object) -> bool:
@@ -32,6 +32,6 @@ async def get_user_from_token(token: str, user: object):
     :param user: Объект пользователя для взаимодействия с базой данных.
     :return: Объект пользователя, соответствующий идентификатору из токена.
     """
-    payload = jwt.decode(token, jwt_key, algorithms=['HS256'])
+    payload = jwt.decode(token, JWT_KEY, algorithms=['HS256'])
     user_id = payload.get('user_id')
     return await user.objects.get_or_none(id=user_id)

@@ -1,7 +1,10 @@
 from os import env
 
-jwt_key = "pass"
+DEFAULT_KEY = 'test'
+
 KEYS = ['POSTGRES_USER', 'POSTGRES_PASSWORD',
         'POSTGRES_HOSTNAME', 'POSTGRES_DB']
-USER, PASSWORD, HOSTNAME, DATABASE = (env.get(i, 'test') for i in KEYS)
+USER, PASSWORD, HOSTNAME, DATABASE = (env.get(i, DEFAULT_KEY) for i in KEYS)
 SQLALCHEMY_DATABASE_URL = f'postgresql://{USER}:{PASSWORD}@{HOSTNAME}/{DATABASE}'
+
+JWT_KEY = env.get('JWT_KEY', DEFAULT_KEY)

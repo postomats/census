@@ -5,7 +5,7 @@ from api.models import User
 import jwt
 from api import exceptions
 from api import schemas
-from api.SETTINGS import jwt_key
+from api.SETTINGS import JWT_KEY
 
 
 async def create_user(
