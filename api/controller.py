@@ -33,7 +33,7 @@ async def sign_up(
     - SignInReturn | dict: Возвращает данные о результате регистрации или словарь с ошибкой.
     """
     sign_up = await service.create_user(
-        username, first_name, last_name, group, email, password, role=UserRole.STUDENT
+        username, first_name, last_name, group, email, password, role=UserRole.STUDENT.value
     )
     if sign_up.get("status"):
         return await service.sign_in(email, password)
