@@ -1,4 +1,5 @@
 import pydantic
+from pydantic import EmailStr
 import datetime
 
 
@@ -16,6 +17,14 @@ class SignUpReturn(pydantic.BaseModel):
 
 class SindUpScheme(pydantic.BaseModel):
     email: str
+    password: str
+
+
+class SingInScheme(pydantic.BaseModel):
+    username: str
+    first_name: str
+    last_name: str
+    email: EmailStr
     password: str
 
 
@@ -48,7 +57,6 @@ class MeReturn(pydantic.BaseModel):
     Содержит поля:
     - id: целое число, идентификатор пользователя.
     - created: объект datetime.datetime, дата и время создания пользователя.
-    - username: строка, имя пользователя.
     - first_name: строка, имя пользователя.
     - last_name: строка, фамилия пользователя.
     - email: pydantic.EmailStr, адрес электронной почты пользователя.
@@ -56,7 +64,6 @@ class MeReturn(pydantic.BaseModel):
 
     id: int
     created: datetime.datetime
-    username: str
     first_name: str
     last_name: str
     group: str

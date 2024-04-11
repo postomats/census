@@ -14,7 +14,6 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     created_date = Column(DateTime, default=datetime.now)
 
-    username = Column(String(100), unique=True)
     first_name = Column(String(100))
     last_name = Column(String(100))
     email = Column(String(100), unique=True)
@@ -48,7 +47,6 @@ class User(Base):
         """
         return {
             "created": self.created_date,
-            "username": self.username,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "group": self.group,

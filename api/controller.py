@@ -5,20 +5,14 @@ from api.models import User
 from db import get_db
 from sqlalchemy.orm import Session
 
-from api.schemas import SindUpScheme
+from api.schemas import SindUpScheme, SingInScheme
 
 controller = APIRouter()
 
 
 @controller.post("/user/auth/sign-up")
 def sign_up(
-    request: Request,
-    username: str = "username",
-    first_name: str = "first_name",
-    last_name: str = "last_name",
-    group: str = "XXXXX",
-    email: EmailStr = "email@email.email",
-    password: str = "password",
+    data: SingInScheme,
     db: Session = Depends(get_db),
 ) -> schemas.SignInReturn | dict:
     """
@@ -26,7 +20,6 @@ def sign_up(
 
     Parameters:
     - request (Request): Объект запроса FastAPI.
-    - username (str): Имя пользователя.
     - first_name (str): Имя пользователя.
     - last_name (str): Фамилия пользователя.
     - group (str): Учебная группа.
@@ -37,10 +30,10 @@ def sign_up(
     - SignInReturn | dict: Возвращает данные о результате регистрации или словарь с ошибкой.
     """
     sign_up = service.create_user(
-        db, username, first_name, last_name, group, email, password, role="Student"
+        db, data.username, data.first_name, data.last_name, data.group, data.email, data.password, role="Student"
     )
     if sign_up.get("status"):
-        return service.sign_in(db, email, password)
+        return service.sign_in(db, data.email, data.password)
     else:
         return sign_up
 
