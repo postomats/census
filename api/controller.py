@@ -5,7 +5,7 @@ from api.models import User
 from db import get_db
 from sqlalchemy.orm import Session
 
-from api.schemas import SindUpScheme, SingInScheme
+from api.schemas import SingUpScheme, SingInScheme
 
 controller = APIRouter()
 
@@ -46,7 +46,7 @@ def sign_up(
 
 @controller.post("/user/auth/sign-in")
 def sign_in(
-    data: SindInScheme,
+    data: SingInScheme,
     db: Session = Depends(get_db),
 ) -> schemas.SignInReturn | dict:
     """

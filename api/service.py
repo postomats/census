@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 
 def create_user(
     db: Session,
-    username: str,
     first_name: str,
     last_name: str,
     group: str,
@@ -32,11 +31,7 @@ def create_user(
     if not utils.check_email_unique(db, email):
         print(utils.check_email_unique(db, email))
         return exceptions.sign_up_email_unique
-    if not utils.check_username_unique(db, username):
-        print(utils.check_username_unique(db, username))
-        return exceptions.sign_up_username_unique
     user = User(
-        username=username,
         first_name=first_name,
         last_name=last_name,
         group=group,

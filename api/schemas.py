@@ -15,7 +15,7 @@ class SignUpReturn(pydantic.BaseModel):
     status: bool
     user_id: int
 
-class SindInScheme(pydantic.BaseModel):
+class SingInScheme(pydantic.BaseModel):
     email: str
     password: str
 
