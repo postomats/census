@@ -1,4 +1,3 @@
-from datetime import datetime
 from api import utils
 from api.models import User
 import jwt

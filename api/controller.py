@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Request, Depends
 from pydantic import EmailStr
-
 from api import schemas, utils, service
 from api.models import User
 from db import get_db

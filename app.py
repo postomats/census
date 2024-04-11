@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-import sqlalchemy
 from fastapi.middleware.cors import CORSMiddleware
 from api.controller import controller
 # Создание экземпляра FastAPI
