@@ -12,7 +12,7 @@ controller = APIRouter()
 
 @controller.post("/user/auth/sign-up")
 def sign_up(
-    data: SingInScheme,
+    data: SingUpScheme,
     db: Session = Depends(get_db),
 ) -> schemas.SignInReturn | dict:
     """
@@ -46,7 +46,7 @@ def sign_up(
 
 @controller.post("/user/auth/sign-in")
 def sign_in(
-    data: SindUpScheme,
+    data: SindInScheme,
     db: Session = Depends(get_db),
 ) -> schemas.SignInReturn | dict:
     """

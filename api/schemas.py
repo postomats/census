@@ -15,15 +15,16 @@ class SignUpReturn(pydantic.BaseModel):
     status: bool
     user_id: int
 
-class SindUpScheme(pydantic.BaseModel):
+class SindInScheme(pydantic.BaseModel):
     email: str
     password: str
 
 
-class SingInScheme(pydantic.BaseModel):
+class SingUpScheme(pydantic.BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
+    group: str
     password: str
 
 
