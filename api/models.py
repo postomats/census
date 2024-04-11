@@ -1,42 +1,39 @@
-from ormar import String, Integer, Model, DateTime
-from db import BaseMeta
-import datetime, bcrypt
-from enum import Enum
+import bcrypt
+from sqlalchemy import Column, String, Integer, DateTime, Enum
+from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
 
-class UserRole(Enum):
-    STUDENT = "Student"
-    WORKER = "Worker"
-    ADMIN = "Admin"
+Base = declarative_base()
 
-class User(Model):
+class User(Base):
     """
     Класс, представляющий пользователя.
 
     Содержит информацию о пользователе и методы для работы с учетной записью.
     """
+    __tablename__ = 'users_db'
 
-    id: int = Integer(primary_key=True)
-    created_date: datetime.datetime = DateTime(default=datetime.datetime.now)
+    id = Column(Integer, primary_key=True)
+    created_date = Column(DateTime, default=datetime.now)
 
-    username = String(max_length=100, unique=True)
-    first_name = String(max_length=100)
-    last_name = String(max_length=100)
-    email = String(max_length=100, unique=True)
-    group = String(max_length=100)
-    password = String(max_length=255)
-    role = String(max_length=20)
+    username = Column(String(100), unique=True)
+    first_name = Column(String(100))
+    last_name = Column(String(100))
+    email = Column(String(100), unique=True)
+    group = Column(String(100))
+    password = Column(String(255))
+    role = Column(Enum("Student", "Worker", "Admin", name="pgenum"))
 
-    async def set_password(self, password: str) -> None:
+    def set_password(self, password: str) -> None:
         """
         Устанавливает пароль пользователя.
 
         :param password: Новый пароль.
         """
-        self.password = bcrypt.hashpw(
-            password.encode("utf-8"), bcrypt.gensalt()
-        ).decode("utf-8")
+        hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+        self.password = hashed_password.decode("utf-8")
 
-    async def check_password(self, password: str) -> bool:
+    def check_password(self, password: str) -> bool:
         """
         Проверяет соответствие введенного пароля текущему паролю пользователя.
 
@@ -45,14 +42,7 @@ class User(Model):
         """
         return bcrypt.checkpw(password.encode("utf-8"), self.password.encode("utf-8"))
 
-    class Meta(BaseMeta):
-        """
-        Метакласс для определения настроек таблицы базы данных для модели User.
-        """
-
-        tablename = "users_db"
-
-    async def json(self):
+    def json(self):
         """
         Преобразует объект User в словарь.
 
@@ -65,5 +55,5 @@ class User(Model):
             "last_name": self.last_name,
             "group": self.group,
             "email": self.email,
-            "role": self.role
+            "role": self.role.value
         }

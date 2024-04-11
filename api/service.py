@@ -24,9 +24,9 @@ async def create_user(
     Returns:
     - dict: Возвращает статус регистрации и идентификатор пользователя, если успешно, или словарь с ошибкой.
     """
-    if not await utils.check_email_unique(email, User):
+    if not await utils.check_email_unique(email):
         return exceptions.sign_up_email_unique
-    if not await utils.check_username_unique(username, User):
+    if not await utils.check_username_unique(username):
         return exceptions.sign_up_username_unique
     user = models.User(
         username=username,
@@ -34,7 +34,7 @@ async def create_user(
         last_name=last_name,
         group=group,
         email=email,
-        password=jwt_key,
+        password=JWT_KEY,
         role=role,
     )
     await user.set_password(password=password)
@@ -62,7 +62,7 @@ async def sign_in(email: str, password: str):
         return exceptions.sign_in_user_not_found_by_email
     user = await User.objects.get(email=email)
     if await user.check_password(password):
-        return {"token": jwt.encode({"user_id": user.id}, jwt_key, algorithm="HS256")}
+        return {"token": jwt.encode({"user_id": user.id}, JWT_KEY, algorithm="HS256")}
     return exceptions.sign_in_wrong_password
 
 
